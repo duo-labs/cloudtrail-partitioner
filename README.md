@@ -1,4 +1,4 @@
-This project sets up partitioned Athena tables for your CloudTrail logs and updates the partitions nightly.  As new AWS accounts begin sending you logs or new AWS regions come online, your paritions will always be up-to-date.
+This project sets up partitioned Athena tables for your CloudTrail logs and updates the partitions nightly.  As new AWS accounts begin sending you logs or new AWS regions come online, your paritions will always be up-to-date.   It is based on work by Alex Smolen in his post [Partitioning CloudTrail Logs in Athena](https://medium.com/@alsmola/partitioning-cloudtrail-logs-in-athena-29add93ee070).
 
 You can immediately deploy the CDK app, but I recommend first running this manaully to ensure everything is configured, and also because running it manually will (by default) create 90 days of partitions, whereas the nightly CDK will not run until 0600 UTC, and will only create partitions for the current day and tomorrow.
 
