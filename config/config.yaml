@@ -1,0 +1,22 @@
+# Bucket containing the CloudTrail logs
+s3_bucket_containing_logs: MYBUCKET
+
+# ARN for an SNS to send alarms to on any errors
+alarm_sns_arn: "arn:aws:sns:us-east-1:000000000000:myalarm"
+
+# Path to the logs (anything before /AWSLogs), or ""
+cloudtrail_prefix: ""
+
+# Number of days in the past to create partitions for
+partition_days: 90
+
+# Bucket for Athena query results
+# If left as "default", then this will be replaced with the Athena default of
+# aws-athena-query-results-ACCOUNTID-REGION
+output_s3_bucket: default
+
+# Athena database name
+database: default
+
+# Athena table prefix
+table_prefix: cloudtrail

@@ -1,0 +1,17 @@
+node_modules
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+resources/partitioner/PyYAML*
+resources/partitioner/bin*
+resources/partitioner/__pycache__/
+resources/partitioner/boto*
+resources/partitioner/*dateutil*
+resources/partitioner/docutils*
+resources/partitioner/jmespath*
+resources/partitioner/s3transfer*
+resources/partitioner/six*
+resources/partitioner/urllib*
+resources/partitioner/yaml*

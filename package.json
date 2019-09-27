@@ -1,0 +1,27 @@
+{
+  "name": "cloudtrail_partitioner",
+  "version": "0.1.0",
+  "bin": {
+    "cloudtrail_partitioner": "bin/cloudtrail_partitioner.js"
+  },
+  "scripts": {
+    "test": "tsc",
+    "test:watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "8.10.45",
+    "typescript": "^3.3.3333",
+    "aws-cdk": "^1.2.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudwatch-actions": "^1.8.0",
+    "@aws-cdk/aws-events": "^1.8.0",
+    "@aws-cdk/aws-events-targets": "^1.8.0",
+    "@aws-cdk/aws-lambda": "^1.8.0",
+    "@aws-cdk/aws-logs": "^1.8.0",
+    "@aws-cdk/core": "^1.2.0",
+    "js-yaml": "^3.13.1",
+    "source-map-support": "^0.5.9"
+  }
+}
