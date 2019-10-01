@@ -23,17 +23,52 @@ cdk deploy
 If you haven't used the cdk before, you may need to run `cdk bootstrap aws://000000000000/us-east-1` (replacing your account ID and region) before running `cdk deploy`.
 
 # Using Athena
-To query your tables, use the AWS Console to get to the Athena service in the region where this was deployed.  From there, you can run a query such as:
+To query your tables, use the AWS Console to get to the Athena service in the region where this was deployed.  Here is an example query to list all of the data for some events:
 
 ```
-SELECT useridentity.arn, errorcode, count(*) AS count
-FROM cloudtrail
-WHERE region = 'us-east-1' AND year = '2019' AND month = '09' AND day = '19' 
+SELECT *
+FROM cloudtrail_000000000000
+WHERE region = 'us-east-1' AND year = '2019' AND month = '09' AND day = '30'
+LIMIT 5;
+```
+
+That query limits the data searched to a specific region and day (using the partitions) and a specific account.
+
+
+This next query shows the most common errors by user (technically by ARN for the session).
+
+```
+SELECT 
+  useridentity.arn, 
+  errorcode, 
+  count(*) AS count 
+FROM cloudtrail_000000000000
+WHERE year = '2019' AND month = '09' AND day = '30' 
   AND errorcode != '' 
 GROUP BY errorcode, useridentity.arn 
-ORDER BY count DESC
+ORDER BY count DESC 
 LIMIT 50;
 ```
 
-That query will show you the most common errors by user (technically by ARN for the session).
+This next query shows the API calls made by a specific user.
 
+```
+SELECT 
+  eventname, count(*) AS COUNT
+FROM cloudtrail_000000000000
+WHERE year = '2019' AND month = '09' and day = '30'
+  AND useridentity.arn like '%alice%'
+GROUP BY eventname
+ORDER BY COUNT DESC
+```
+
+This next query shows which accounts have been accessed from a specific IP address.
+```
+SELECT 
+  recipientaccountid, count(*) AS COUNT
+FROM cloudtrail
+WHERE year = '2019' AND month = '09'
+  AND sourceipaddress = '1.2.3.4'
+GROUP BY recipientaccountid 
+ORDER BY COUNT DESC
+```
