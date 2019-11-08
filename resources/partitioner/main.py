@@ -8,7 +8,29 @@ import yaml
 import datetime
 import re
 import os
+import argparse
+import sys
 from pathlib import Path
+
+
+def get_session():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--profile',
+        help='AWS profile from ~/.aws/credentials',
+        required=False,
+        default='default'
+    )
+    
+    args = parser.parse_args()
+
+    try:
+        session = boto3.Session(profile_name=args.profile)
+    except Exception as e:
+        print('%s' % e)
+        sys.exit(1)
+
+    return session
 
 
 class athena_querier:
@@ -19,7 +41,7 @@ class athena_querier:
     def __init__(self, database, output):
         self.database = database
         self.output_bucket = output
-        self.athena = boto3.client("athena")
+        self.athena = get_session().client("athena")
 
         self.query(
             "CREATE DATABASE IF NOT EXISTS {db} {comment}".format(
@@ -126,11 +148,11 @@ def main():
         raise Exception("No configuration info found")
 
     # Check the credentials and get the current region and account id
-    sts = boto3.client("sts")
+    sts = get_session().client("sts")
     identity = sts.get_caller_identity()
     logging.info("Using AWS identity: {}".format(identity["Arn"]))
     current_account_id = identity["Account"]
-    current_region = boto3.session.Session().region_name
+    current_region = get_session().region_name
 
     # Get the default output bucket if one is not given
     if config['output_s3_bucket'] == 'default':
@@ -143,15 +165,19 @@ def main():
     athena = athena_querier(config['database'], "s3://"+config['output_s3_bucket'])
 
     # Get all regions (needed for creating partitions)
-    ec2 = boto3.client("ec2")
+    ec2 = get_session().client("ec2")
     region_response = ec2.describe_regions(AllRegions=True)["Regions"]
     regions = []
     for region in region_response:
         regions.append(region["RegionName"])
 
     # Ensure the CloudTrail log folder has the expected contents
-    s3 = boto3.client("s3")
+    s3 = get_session().client("s3")
     log_path_prefix = config["cloudtrail_prefix"]
+
+    # Users will most likely forget this in the config, so we add it here
+    if not log_path_prefix.endswith('/'):
+        log_path_prefix += '/'
 
     # Ensure we're running in the same region as the bucket
     bucket_location = s3.get_bucket_location(Bucket=config["s3_bucket_containing_logs"])["LocationConstraint"]
@@ -167,7 +193,7 @@ def main():
         Delimiter="/",
         MaxKeys=1,
     )
-
+    
     if "CommonPrefixes" not in resp or len(resp["CommonPrefixes"]) == 0:
         exit(
             "ERROR: S3 bucket has no contents.  Ensure you have logs at s3://{bucket}/{path}".format(
@@ -175,7 +201,7 @@ def main():
             )
         )
 
-    if resp["CommonPrefixes"][0]["Prefix"] != "AWSLogs/":
+    if resp["CommonPrefixes"][0]["Prefix"] != log_path_prefix + "AWSLogs/":
         exit(
             "ERROR: S3 bucket path is incorrect.  Ensure you have logs at s3://{bucket}/{path}/AWSLogs".format(
                 bucket=config["s3_bucket_containing_logs"], path=log_path_prefix
@@ -208,7 +234,7 @@ def main():
         elif re.match("^[0-d]{12}$", directory_name):
             accounts.append({"account_id": directory_name, "path_prefix": prefix})
         else:
-            logger.info("Unexpected folder: {}".format(directory_name))
+            print("Unexpected folder: {}".format(directory_name))
 
     # String to hold the SQL query that creates a view to allow searching all the tables.
     view_query = ""
