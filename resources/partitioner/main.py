@@ -17,11 +17,10 @@ def get_session():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--profile',
-        help='AWS profile from ~/.aws/credentials',
+        help='AWS profile from ~/.aws/config',
         required=False,
-        default='default'
+        default=None
     )
-    
     args = parser.parse_args()
 
     try:
