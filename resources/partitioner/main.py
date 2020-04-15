@@ -12,6 +12,7 @@ import argparse
 import sys
 from pathlib import Path
 
+__version__ = "1.0.0"
 
 def get_session():
     parser = argparse.ArgumentParser()
@@ -119,7 +120,8 @@ class athena_querier:
 
 
 def main():
-    
+    print("Starting cloudtrail_partitioner {}".format(__version__))
+
     # Read config
     config = {}
     try:
@@ -127,7 +129,7 @@ def main():
         with open(config_file, "r") as stream:
             config = yaml.safe_load(stream)
     except Exception as e:
-        logging.info("Unable to open config file, will try getting config from environment variables")
+        print("Unable to open config file, will try getting config from environment variables")
     
     # Override the config file with the environment variables
     if 'S3_BUCKET_CONTAINING_LOGS' in os.environ:
@@ -149,7 +151,7 @@ def main():
     # Check the credentials and get the current region and account id
     sts = get_session().client("sts")
     identity = sts.get_caller_identity()
-    logging.info("Using AWS identity: {}".format(identity["Arn"]))
+    print("Using AWS identity: {}".format(identity["Arn"]))
     current_account_id = identity["Account"]
     current_region = get_session().region_name
 
