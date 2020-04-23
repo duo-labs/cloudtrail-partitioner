@@ -176,10 +176,6 @@ def main():
     s3 = get_session().client("s3")
     log_path_prefix = config["cloudtrail_prefix"]
 
-    # Users will most likely forget this in the config, so we add it here
-    if not log_path_prefix.endswith('/'):
-        log_path_prefix += '/'
-
     # Ensure we're running in the same region as the bucket
     bucket_location = s3.get_bucket_location(Bucket=config["s3_bucket_containing_logs"])["LocationConstraint"]
     if bucket_location is None:
