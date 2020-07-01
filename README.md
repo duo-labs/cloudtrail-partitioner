@@ -72,3 +72,5 @@ WHERE year = '2019' AND month = '09'
 GROUP BY recipientaccountid 
 ORDER BY COUNT DESC
 ```
+
+For more ideas of what to look for, see https://github.com/easttimor/aws-incident-response
