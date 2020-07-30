@@ -4,6 +4,9 @@ You can immediately deploy the CDK app, but I recommend first running this manau
 
 Tables are created for each account as `cloudtrail_000000000000` and also a view is created that unions all these tables.
 
+# Related projects
+This project was based on [work](https://medium.com/@alsmola/partitioning-cloudtrail-logs-in-athena-29add93ee070) by Alex Smolen. This project works great for many, but at enough scale (roughly 100GB of Cloudtrail logs), the way in which Athena is used with this project runs into problems.  For this and other reasons, Alex released a new project [cloudtrail-parquet-glue](https://github.com/alsmola/cloudtrail-parquet-glue) which is described in his post [Use AWS Glue to make CloudTrail Parquet partitions](https://medium.com/@alsmola/use-aws-glue-to-make-cloudtrail-parquet-partitions-c903470dc3e5) and resolves issues #13 and #14 with this project.
+
 # Setup
 Edit `config/config.yaml` to specify the S3 bucket containing your CloudTrail logs, the SNS to send alarms to (you must create one if you don't already have one) and any other configuraiton info.
 
@@ -74,3 +77,4 @@ ORDER BY COUNT DESC
 ```
 
 For more ideas of what to look for, see https://github.com/easttimor/aws-incident-response
+
