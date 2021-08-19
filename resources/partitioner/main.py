@@ -198,7 +198,7 @@ def main():
             )
         )
 
-    if resp["CommonPrefixes"][0]["Prefix"] != log_path_prefix + "AWSLogs/":
+    if resp["CommonPrefixes"][0]["Prefix"] != "AWSLogs/" + log_path_prefix:
         exit(
             "ERROR: S3 bucket path is incorrect.  Ensure you have logs at s3://{bucket}/{path}/AWSLogs".format(
                 bucket=config["s3_bucket_containing_logs"], path=log_path_prefix
@@ -206,7 +206,7 @@ def main():
         )
 
     # Identify all accounts in this bucket and what their prefix paths are
-    log_path_prefix = log_path_prefix + "AWSLogs/"
+    log_path_prefix = "AWSLogs/" + log_path_prefix
     resp = s3.list_objects_v2(
         Bucket=config["s3_bucket_containing_logs"],
         Prefix=log_path_prefix,
